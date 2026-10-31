@@ -1,0 +1,78 @@
+import streamlit as st
+import time
+
+# 设置页面标题和布局
+st.set_page_config(page_title="外贸智伴 - AI询盘助手", page_icon="🌍", layout="wide")
+
+# 初始化会话状态，用于存储对话历史
+if "chat_history" not in st.session_state:
+    st.session_state.chat_history = []
+
+# ==================== 页面侧边栏 ====================
+with st.sidebar:
+    st.title("🌍 外贸智伴")
+    st.write("AI + SaaS 外贸协作平台")
+    st.markdown("---")
+    
+    # 菜单选择
+    menu_choice = st.radio(
+        "导航菜单",
+        ("仪表盘", "询盘管理", "AI智能助手"),
+        index=2 # 默认选中AI助手
+    )
+
+# ==================== 页面主内容区 ====================
+if menu_choice == "AI智能助手":
+    st.title("AI 智能询盘回复")
+    st.write("请粘贴您的海外客户询盘邮件，AI将为您生成专业、地道的回复草稿。")
+    st.markdown("---")
+    
+    # 询盘输入框
+    inquiry_text = st.text_area(
+        "在此粘贴客户询盘邮件内容：",
+        height=200,
+        placeholder="例如：Dear Sir/Madam, We are interested in your product X100. Please send us a quote for 500 units... (在此输入询盘内容)"
+    )
+    
+    # 生成按钮
+    if st.button("✨ 生成AI回复", type="primary"):
+        if inquiry_text:
+            # 1. 显示加载动画
+            with st.spinner('AI 正在分析询盘并撰写回复...'):
+                time.sleep(2.5) # 模拟AI思考时间
+                
+                # 2. 定义AI回复模板（模拟效果）
+                ai_reply = f"""
+                Subject: Re: Inquiry for [Your Product Name] - Quotation Provided
+
+                Dear Sir/Madam,
+
+                Thank you for your interest in our products.
+
+                We are glad to provide a quotation for {st.session_state.get('quantity', '500')} units of the X100 model as you requested. Attached please find the detailed quotation sheet.
+
+                If you have any questions or require further information, please do not hesitate to contact me.
+
+                Best regards,
+
+                [Your Name]
+                [Your Company Name]
+                """
+                # 将生成的回复存入会话状态
+                st.session_state.ai_generated_reply = ai_reply
+        else:
+            st.warning("请输入询盘内容，AI才能为您生成回复哦！")
+
+    # 3. 展示AI生成的回复
+    if "ai_generated_reply" in st.session_state:
+        st.success("AI 回复生成完毕！")
+        st.markdown("---")
+        st.code(st.session_state.ai_generated_reply, language="markdown")
+        
+        # 4. 提供复制按钮
+        if st.button("📋 复制回复内容"):
+            st.toast("回复内容已复制到剪贴板！")
+
+else:
+    st.title(menu_choice)
+    st.write("这个页面还在开发中... 快去试试 'AI智能助手' 吧！")
